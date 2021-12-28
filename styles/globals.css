@@ -1,16 +1,19 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.PhoneInput {
+    @apply ring-1 ring-gray-200 rounded-md overflow-hidden;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.PhoneInput--focus {
+    @apply ring-blue-600;
 }
 
-* {
-  box-sizing: border-box;
+.PhoneInputCountry {
+    @apply bg-gray-200 p-3 mr-0 !important;
+}
+
+.PhoneInput input {
+    @apply border-none;
 }
