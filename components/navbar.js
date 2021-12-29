@@ -44,7 +44,7 @@ export default function Navbar() {
         <div className="relative bg-white">
             <div className="w-screen mx-auto px-8 sm:px-10 shadow-md">
                 <div className="flex justify-between items-center py-6 md:justify-start md:space-x-10 h-24 max-h-24">
-                    <div className="flex justify-start lg:w-0 lg:flex-1 max-h-full">
+                    <div className="flex justify-start flex-1 max-h-full">
                         <Link href="/">
                             <a className="text-[0rem]">
                                 <span className="sr-only">Habitual</span>
