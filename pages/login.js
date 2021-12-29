@@ -17,6 +17,7 @@ import * as style from "@dicebear/avatars-identicon-sprites";
 
 import LoginSideIllustration from "@icons/login-side.svg";
 import HabitualLogo from "@icons/habitual.svg";
+import Loader from "@components/Loader";
 
 export default function Login(props) {
     const { user, username, loading } = useContext(UserContext);
@@ -36,12 +37,16 @@ export default function Login(props) {
                         <LoginSideIllustration className="w-full h-auto" />
                     </div>
                     {loading ? (
-                        <h1>asdjf</h1>
+                        <div className="bg-white p-12 w-full md:w-[55%] relative">
+                            <Loader show={true} />
+                        </div>
                     ) : user ? (
                         username === null ? (
                             <UsernameForm />
                         ) : (
-                            <h1>loading</h1>
+                            <div className="bg-white p-12 w-full md:w-[55%] relative">
+                                <Loader show={true} />
+                            </div>
                         )
                     ) : (
                         <SignInForm />
@@ -197,6 +202,7 @@ const UsernameForm = () => {
             email: emailValue,
             createdAt: serverTimestamp(),
             bio: null,
+            new: true,
         });
         batch.set(usernameDoc, { uid: user.uid });
 
