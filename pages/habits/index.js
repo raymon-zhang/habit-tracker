@@ -1,7 +1,14 @@
+import { useContext, useEffect, useState } from "react";
+import Image from "next/image";
+
+import { format } from "date-fns";
+
 import HabitLayout from "@layouts/HabitLayout";
 import { UserContext } from "@lib/context";
-import { format } from "date-fns";
-import { useContext, useEffect, useState } from "react";
+
+import Xiguan_1_0 from "@icons/xiguans/1/0.svg";
+import Xiguan_2_0 from "@icons/xiguans/2/0.svg";
+import Xiguan_3_0 from "@icons/xiguans/3/0.svg";
 
 export default function Habits() {
     const [greeting, setGreeting] = useState("");
@@ -84,8 +91,20 @@ export default function Habits() {
 
 const HabitOnboarding = () => {
     const [completedIntro, setCompletedIntro] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [categoryHist, setCategoryHist] = useState([]);
+
+    const addSelection = (selection) => {
+        setSelectedCategory(selection);
+        setCategoryHist((prevHist) => [...prevHist, selection].slice(-3));
+    };
+
+    const onSubmitSelection = () => {};
+
     const HabitIntro = () => {
         const [page, setPage] = useState(0);
+
+        const { username, userDoc, user } = useContext(UserContext);
 
         const introPageContent = [
             <p key="1">
@@ -113,8 +132,10 @@ const HabitOnboarding = () => {
                 have.
             </p>,
         ];
+
         return (
-            <div>
+            <div className="max-w-sm w-full p-6 rounded-lg shadow-lg">
+                <h3 className="text-2xl mb-4">Welcome, {username}!</h3>
                 <div className="text-gray-500 text-md leading-6 mb-6">
                     {introPageContent[page]}
                 </div>
@@ -155,14 +176,56 @@ const HabitOnboarding = () => {
             </div>
         );
     };
-    const { username, userDoc, user } = useContext(UserContext);
+
+    const SelectionPage = () => {
+        const eggDescriptions = [
+            "",
+            "Good choice! Green xiguans are very easy to raise and make great companions.",
+            "Hm! Blue xiguans are very interesting and worth developing. ",
+            "Red xiguans require a lot of patience, but can be very powerful once fully developed.",
+        ];
+        return (
+            <div className="max-w-sm w-full p-6 rounded-lg shadow-lg">
+                <h3 className="text-2xl mb-4">Choose your starter</h3>
+                <div className="text-gray-500 text-md leading-6 mb-6">
+                    <p>
+                        Here are three xiguan eggs. The different colors
+                        correspond to the different types. Choose wisely!
+                    </p>
+                </div>
+                <div className="flex justify-between">
+                    <button onClick={() => addSelection(1)}>
+                        <div className="bg-green-50 rounded-lg p-4">
+                            <div className="w-16 h-16 relative">
+                                <Xiguan_1_0 className="w-full h-full" />
+                            </div>
+                        </div>
+                    </button>
+                    <button onClick={() => addSelection(2)}>
+                        <div className="bg-blue-50 rounded-lg p-4">
+                            <div className="w-16 h-16 relative">
+                                <Xiguan_2_0 className="w-full h-full" />
+                            </div>
+                        </div>
+                    </button>
+                    <button onClick={() => addSelection(3)}>
+                        <div className="bg-red-50 rounded-lg p-4">
+                            <div className="w-16 h-16 relative">
+                                <Xiguan_3_0 className="w-full h-full" />
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                <p>
+                    {eggDescriptions[selectedCategory]}
+                </p>
+            </div>
+        );
+    };
 
     return (
         <div className="flex flex-col pt-20 px-5 items-center">
-            <div className="max-w-sm w-full p-6 rounded-lg shadow-lg">
-                <h3 className="text-2xl mb-4">Welcome, {username}!</h3>
-                {!completedIntro && <HabitIntro />}
-            </div>
+            {!completedIntro ? <HabitIntro /> : <SelectionPage />}
         </div>
     );
 };
