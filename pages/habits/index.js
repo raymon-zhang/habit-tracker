@@ -9,6 +9,7 @@ import { UserContext } from "@lib/context";
 import Xiguan_1_0 from "@icons/xiguans/1/0.svg";
 import Xiguan_2_0 from "@icons/xiguans/2/0.svg";
 import Xiguan_3_0 from "@icons/xiguans/3/0.svg";
+import Xiguan_4_0 from "@icons/xiguans/4/0.svg";
 
 export default function Habits() {
     const [greeting, setGreeting] = useState("");
@@ -260,14 +261,14 @@ const HabitOnboarding = () => {
                     </div>
                 ) : (
                     <div>
-                        <h3 className="text-2xl mb-4"></h3>
+                        <h3 className="text-2xl mb-4">Let&apos;see...</h3>
                         <p className="text-gray-500 text-md leading-6 mb-6">
                             If you insist...there is a fourth type of egg.
                         </p>
                         <div className="flex justify-center mb-6">
                             <div className="bg-yellow-100 rounded-lg p-4">
                                 <div className="w-16 h-16 relative">
-                                    <Xiguan_3_0 className="w-full h-full" />
+                                    <Xiguan_4_0 className="w-full h-full" />
                                 </div>
                             </div>
                         </div>
