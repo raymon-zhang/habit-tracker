@@ -91,13 +91,6 @@ export default function Habits() {
 
 const HabitOnboarding = () => {
     const [completedIntro, setCompletedIntro] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState(0);
-    const [categoryHist, setCategoryHist] = useState([]);
-
-    const addSelection = (selection) => {
-        setSelectedCategory(selection);
-        setCategoryHist((prevHist) => [...prevHist, selection].slice(-3));
-    };
 
     const onSubmitSelection = () => {};
 
@@ -178,47 +171,108 @@ const HabitOnboarding = () => {
     };
 
     const SelectionPage = () => {
+        const [selectedCategory, setSelectedCategory] = useState(0);
+        const [categoryHist, setCategoryHist] = useState([]);
+
+        const addSelection = (selection) => {
+            setSelectedCategory(selection);
+            setCategoryHist((prevHist) => [...prevHist, selection].slice(-3));
+        };
+
         const eggDescriptions = [
             "",
             "Good choice! Green xiguans are very easy to raise and make great companions.",
             "Hm! Blue xiguans are very interesting and worth developing. ",
             "Red xiguans require a lot of patience, but can be very powerful once fully developed.",
         ];
+
         return (
             <div className="max-w-sm w-full p-6 rounded-lg shadow-lg">
-                <h3 className="text-2xl mb-4">Choose your starter</h3>
-                <div className="text-gray-500 text-md leading-6 mb-6">
-                    <p>
-                        Here are three xiguan eggs. The different colors
-                        correspond to the different types. Choose wisely!
-                    </p>
-                </div>
-                <div className="flex justify-between">
-                    <button onClick={() => addSelection(1)}>
-                        <div className="bg-green-50 rounded-lg p-4">
-                            <div className="w-16 h-16 relative">
-                                <Xiguan_1_0 className="w-full h-full" />
+                {selectedCategory !== 4 ? (
+                    <div>
+                        <h3 className="text-2xl mb-4">Choose your starter</h3>
+                        <div className="text-gray-500 text-md leading-6 mb-6">
+                            <p>
+                                Here are three xiguan eggs. The different colors
+                                correspond to the different types. Choose
+                                wisely!
+                            </p>
+                        </div>
+                        <div className="flex justify-between mb-6">
+                            <button onClick={() => addSelection(1)}>
+                                <div
+                                    className={
+                                        selectedCategory === 1
+                                            ? "bg-green-100 rounded-lg p-4"
+                                            : "bg-green-50 rounded-lg p-4"
+                                    }
+                                >
+                                    <div className="w-16 h-16 relative">
+                                        <Xiguan_1_0 className="w-full h-full" />
+                                    </div>
+                                </div>
+                            </button>
+                            <button onClick={() => addSelection(2)}>
+                                <div
+                                    className={
+                                        selectedCategory === 2
+                                            ? "bg-blue-100 rounded-lg p-4"
+                                            : "bg-blue-50 rounded-lg p-4"
+                                    }
+                                >
+                                    <div className="w-16 h-16 relative">
+                                        <Xiguan_2_0 className="w-full h-full" />
+                                    </div>
+                                </div>
+                            </button>
+                            <button onClick={() => addSelection(3)}>
+                                <div
+                                    className={
+                                        selectedCategory === 3
+                                            ? "bg-red-100 rounded-lg p-4"
+                                            : "bg-red-50 rounded-lg p-4"
+                                    }
+                                >
+                                    <div className="w-16 h-16 relative">
+                                        <Xiguan_3_0 className="w-full h-full" />
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <p className="text-gray-500 text-md leading-6 mb-6">
+                            {eggDescriptions[selectedCategory]}
+                        </p>
+                        {selectedCategory !== 0 && (
+                            <button className="bg-blue-600 hover:bg-blue-700 w-full py-1.5 rounded-md text-white">
+                                I want the{" "}
+                                {["", "green", "blue", "red"][selectedCategory]}{" "}
+                                egg
+                            </button>
+                        )}
+                        {categoryHist.length === 3 && (
+                            <button
+                                className="shadow-md rounded-md w-full py-1.5 mt-4 text-gray-400"
+                                onClick={() => setSelectedCategory(4)}
+                            >
+                                I don&apos;t like any of them
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <h3 className="text-2xl mb-4"></h3>
+                        <p className="text-gray-500 text-md leading-6 mb-6">
+                            If you insist...there is a fourth type of egg.
+                        </p>
+                        <div className="flex justify-center mb-6">
+                            <div className="bg-yellow-100 rounded-lg p-4">
+                                <div className="w-16 h-16 relative">
+                                    <Xiguan_3_0 className="w-full h-full" />
+                                </div>
                             </div>
                         </div>
-                    </button>
-                    <button onClick={() => addSelection(2)}>
-                        <div className="bg-blue-50 rounded-lg p-4">
-                            <div className="w-16 h-16 relative">
-                                <Xiguan_2_0 className="w-full h-full" />
-                            </div>
-                        </div>
-                    </button>
-                    <button onClick={() => addSelection(3)}>
-                        <div className="bg-red-50 rounded-lg p-4">
-                            <div className="w-16 h-16 relative">
-                                <Xiguan_3_0 className="w-full h-full" />
-                            </div>
-                        </div>
-                    </button>
-                </div>
-                <p>
-                    {eggDescriptions[selectedCategory]}
-                </p>
+                    </div>
+                )}
             </div>
         );
     };
