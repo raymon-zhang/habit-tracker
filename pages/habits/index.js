@@ -3,8 +3,13 @@ import Image from "next/image";
 
 import { format } from "date-fns";
 
+import axios from "axios";
+
+import { doc, setDoc } from "firebase/firestore";
+
 import HabitLayout from "@layouts/HabitLayout";
 import { UserContext } from "@lib/context";
+import { firestore } from "@lib/firebase";
 
 import Xiguan_1_0 from "@icons/xiguans/1/0.svg";
 import Xiguan_2_0 from "@icons/xiguans/2/0.svg";
@@ -93,8 +98,6 @@ export default function Habits() {
 const HabitOnboarding = () => {
     const [completedIntro, setCompletedIntro] = useState(false);
 
-    const onSubmitSelection = () => {};
-
     const HabitIntro = () => {
         const [page, setPage] = useState(0);
 
@@ -174,6 +177,39 @@ const HabitOnboarding = () => {
     const SelectionPage = () => {
         const [selectedCategory, setSelectedCategory] = useState(0);
         const [categoryHist, setCategoryHist] = useState([]);
+        const [selectionConfirmed, setSelectionConfirmed] = useState(false);
+        const [xiguanName, setXiguanName] = useState("");
+        const [habitName, setHabitName] = useState("");
+
+        const { user } = useContext(UserContext);
+
+        const onSubmitSelection = async (e) => {
+            e.preventDefault();
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + (await user.getIdToken(true)),
+            };
+            const response = await axios
+                .post(
+                    "/api/createHabit",
+                    {
+                        name: habitName,
+                        xiguanName: xiguanName,
+                        type: selectedCategory,
+                        headers,
+                    },
+                    { headers }
+                )
+                .catch((error) => {
+                    console.log(error);
+                });
+            if (response?.status !== 201) {
+                return;
+            }
+
+            const userDoc = doc(firestore, "users", user.uid);
+            setDoc(userDoc, { new: false }, { merge: true });
+        };
 
         const addSelection = (selection) => {
             setSelectedCategory(selection);
@@ -189,90 +225,184 @@ const HabitOnboarding = () => {
 
         return (
             <div className="max-w-sm w-full p-6 rounded-lg shadow-lg">
-                {selectedCategory !== 4 ? (
-                    <div>
-                        <h3 className="text-2xl mb-4">Choose your starter</h3>
-                        <div className="text-gray-500 text-md leading-6 mb-6">
-                            <p>
-                                Here are three xiguan eggs. The different colors
-                                correspond to the different types. Choose
-                                wisely!
+                {!selectionConfirmed ? (
+                    selectedCategory !== 4 ? (
+                        <div>
+                            <h3 className="text-2xl mb-4">
+                                Choose your starter
+                            </h3>
+                            <div className="text-gray-500 text-md leading-6 mb-6">
+                                <p>
+                                    Here are three xiguan eggs. The different
+                                    colors correspond to the different types.
+                                    Choose wisely!
+                                </p>
+                            </div>
+                            <div className="flex justify-between mb-6">
+                                <button onClick={() => addSelection(1)}>
+                                    <div
+                                        className={
+                                            selectedCategory === 1
+                                                ? "bg-green-100 rounded-lg p-4"
+                                                : "bg-green-50 rounded-lg p-4"
+                                        }
+                                    >
+                                        <div className="w-16 h-16 relative">
+                                            <Xiguan_1_0 className="w-full h-full" />
+                                        </div>
+                                    </div>
+                                </button>
+                                <button onClick={() => addSelection(2)}>
+                                    <div
+                                        className={
+                                            selectedCategory === 2
+                                                ? "bg-blue-100 rounded-lg p-4"
+                                                : "bg-blue-50 rounded-lg p-4"
+                                        }
+                                    >
+                                        <div className="w-16 h-16 relative">
+                                            <Xiguan_2_0 className="w-full h-full" />
+                                        </div>
+                                    </div>
+                                </button>
+                                <button onClick={() => addSelection(3)}>
+                                    <div
+                                        className={
+                                            selectedCategory === 3
+                                                ? "bg-red-100 rounded-lg p-4"
+                                                : "bg-red-50 rounded-lg p-4"
+                                        }
+                                    >
+                                        <div className="w-16 h-16 relative">
+                                            <Xiguan_3_0 className="w-full h-full" />
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <p className="text-gray-500 text-md leading-6 mb-6">
+                                {eggDescriptions[selectedCategory]}
                             </p>
+                            {selectedCategory !== 0 && (
+                                <button
+                                    className="bg-blue-600 hover:bg-blue-700 w-full py-1.5 rounded-md text-white"
+                                    onClick={() => setSelectionConfirmed(true)}
+                                >
+                                    I want the{" "}
+                                    {
+                                        ["", "green", "blue", "red"][
+                                            selectedCategory
+                                        ]
+                                    }{" "}
+                                    egg
+                                </button>
+                            )}
+                            {categoryHist.length === 3 && (
+                                <button
+                                    className="shadow-md rounded-md w-full py-1.5 mt-4 text-gray-400"
+                                    onClick={() => setSelectedCategory(4)}
+                                >
+                                    I don&apos;t like any of them
+                                </button>
+                            )}
                         </div>
-                        <div className="flex justify-between mb-6">
-                            <button onClick={() => addSelection(1)}>
-                                <div
-                                    className={
-                                        selectedCategory === 1
-                                            ? "bg-green-100 rounded-lg p-4"
-                                            : "bg-green-50 rounded-lg p-4"
-                                    }
-                                >
+                    ) : (
+                        <div>
+                            <h3 className="text-2xl mb-4">Let&apos;s see...</h3>
+                            <p className="text-gray-500 text-md leading-6 mb-6">
+                                If you insist...there is a fourth type of egg.
+                            </p>
+                            <div className="flex justify-center mb-6">
+                                <div className="bg-yellow-100 rounded-lg p-4">
                                     <div className="w-16 h-16 relative">
-                                        <Xiguan_1_0 className="w-full h-full" />
+                                        <Xiguan_4_0 className="w-full h-full" />
                                     </div>
                                 </div>
+                            </div>
+                            <p className="text-gray-500 text-md leading-6 mb-6">
+                                The problem is, that very little is known about
+                                yellow xiguans.
+                                <br />
+                                Their behavior can be a little
+                                ...unpredictable... at times.
+                            </p>
+                            <button
+                                className="bg-blue-600 hover:bg-blue-700 w-full py-1.5 rounded-md text-white"
+                                onClick={() => setSelectionConfirmed(true)}
+                            >
+                                I want the yellow egg.
                             </button>
-                            <button onClick={() => addSelection(2)}>
-                                <div
-                                    className={
-                                        selectedCategory === 2
-                                            ? "bg-blue-100 rounded-lg p-4"
-                                            : "bg-blue-50 rounded-lg p-4"
-                                    }
-                                >
-                                    <div className="w-16 h-16 relative">
-                                        <Xiguan_2_0 className="w-full h-full" />
-                                    </div>
-                                </div>
-                            </button>
-                            <button onClick={() => addSelection(3)}>
-                                <div
-                                    className={
-                                        selectedCategory === 3
-                                            ? "bg-red-100 rounded-lg p-4"
-                                            : "bg-red-50 rounded-lg p-4"
-                                    }
-                                >
-                                    <div className="w-16 h-16 relative">
-                                        <Xiguan_3_0 className="w-full h-full" />
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                        <p className="text-gray-500 text-md leading-6 mb-6">
-                            {eggDescriptions[selectedCategory]}
-                        </p>
-                        {selectedCategory !== 0 && (
-                            <button className="bg-blue-600 hover:bg-blue-700 w-full py-1.5 rounded-md text-white">
-                                I want the{" "}
-                                {["", "green", "blue", "red"][selectedCategory]}{" "}
-                                egg
-                            </button>
-                        )}
-                        {categoryHist.length === 3 && (
                             <button
                                 className="shadow-md rounded-md w-full py-1.5 mt-4 text-gray-400"
-                                onClick={() => setSelectedCategory(4)}
+                                onClick={() => setSelectedCategory(0)}
                             >
-                                I don&apos;t like any of them
+                                Take me back
                             </button>
-                        )}
-                    </div>
+                        </div>
+                    )
                 ) : (
-                    <div>
-                        <h3 className="text-2xl mb-4">Let&apos;see...</h3>
+                    <form onSubmit={onSubmitSelection}>
+                        <h3 className="text-2xl mb-4">Name your xiguan</h3>
                         <p className="text-gray-500 text-md leading-6 mb-6">
-                            If you insist...there is a fourth type of egg.
+                            Pick a name for your xiguan. Choose wisely, becuase
+                            this can&apos;t be changed.
                         </p>
-                        <div className="flex justify-center mb-6">
-                            <div className="bg-yellow-100 rounded-lg p-4">
+                        <div className="flex justify-center">
+                            <div
+                                className={`bg-${
+                                    ["", "green", "blue", "red", "yellow"][
+                                        selectedCategory
+                                    ]
+                                }-100 rounded-lg p-4`}
+                            >
                                 <div className="w-16 h-16 relative">
-                                    <Xiguan_4_0 className="w-full h-full" />
+                                    {
+                                        [
+                                            null,
+                                            <Xiguan_1_0
+                                                key="1"
+                                                className="w-full h-full"
+                                            />,
+                                            <Xiguan_2_0
+                                                key="2"
+                                                className="w-full h-full"
+                                            />,
+                                            <Xiguan_3_0
+                                                key="3"
+                                                className="w-full h-full"
+                                            />,
+                                            <Xiguan_4_0
+                                                key="4"
+                                                className="w-full h-full"
+                                            />,
+                                        ][selectedCategory]
+                                    }
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <input
+                            type="text"
+                            className="w-full border-none ring-1 ring-gray-200 focus:ring-blue-600 rounded-md mt-6 mb-6"
+                            placeholder="Gerald"
+                            value={xiguanName}
+                            onChange={(e) => setXiguanName(e.target.value)}
+                        />
+                        <p className="text-gray-500 text-md leading-6 mb-2">
+                            You&apos;ll also need a name for the habit.
+                        </p>
+                        <input
+                            type="text"
+                            className="w-full border-none ring-1 ring-gray-200 focus:ring-blue-600 rounded-md mb-6"
+                            value={habitName}
+                            placeholder="walk the dog"
+                            onChange={(e) => setHabitName(e.target.value)}
+                        />
+                        <button
+                            className="bg-blue-600 hover:bg-blue-700 w-full py-1.5 rounded-md text-white"
+                            type="submit"
+                        >
+                            Confirm
+                        </button>
+                    </form>
                 )}
             </div>
         );

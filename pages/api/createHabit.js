@@ -42,6 +42,7 @@ export default async function handler(req, res) {
 
         await doc.ref.collection("habits").add({
             name: body.name,
+            xiguanName: body.xiguanName,
             type: body.type,
             special: Math.random() < 0.001,
         });
@@ -61,6 +62,16 @@ const validateBody = (body) => {
         return false;
     }
     if (body.name.length > 75) {
+        return false;
+    }
+
+    if (typeof body.xiguanName !== "string") {
+        return false;
+    }
+    if (body.name.xiguanName < 1) {
+        return false;
+    }
+    if (body.name.xiguanName > 30) {
         return false;
     }
 
