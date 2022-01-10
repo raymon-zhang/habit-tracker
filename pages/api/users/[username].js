@@ -1,4 +1,4 @@
-import db from "../../../utils/db";
+import db from "../../../utils/admin";
 
 export default async function handler(req, res) {
     const { username } = req.query;
